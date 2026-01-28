@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成文档 - Word生成工具</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .form-control { border-radius: 8px; }
+        .form-control:focus { border-color: #667eea; box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25); }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 8px; }
+        .btn-primary:hover { background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%); border: none; }
+        .btn-secondary { border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/report-system/home">
+                <i class="bi bi-file-earmark-word"></i> Word生成工具
+            </a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/report-system/home">首页</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/report-system/dashboard">概览</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/report-system/template/list">模板管理</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/report-system/generation/list">生成记录</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-file-earmark-plus"></i> 生成文档</h2>
+            <button class="btn btn-secondary" onclick="location.href='/report-system/generation/list'">
+                <i class="bi bi-arrow-left"></i> 返回
+            </button>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form id="generateForm">
+                    <div class="mb-3">
+                        <label class="form-label">模板名称</label>
+                        <input type="text" class="form-control" th:value="${template.name}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">模板描述</label>
+                        <input type="text" class="form-control" th:value="${template.description}" disabled>
+                    </div>
+
+                    <div class="mb-3" th:if="${template.apiUrl}">
+                        <label class="form-label">数据接口</label>
+                        <input type="text" class="form-control" th:value="${template.apiUrl}" disabled>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">数据来源</label>
+                        <div class="form-check form-check-inline" th:if="${template.apiUrl != null and !template.apiUrl.isEmpty()}">
+                            <input class="form-check-input" type="radio" name="dataSource" id="sourceApi" value="api" checked>
+                            <label class="form-check-label" for="sourceApi"><i class="bi bi-cloud-arrow-down"></i> 接口数据</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="dataSource" id="sourceManual" value="manual" th:checked="${template.apiUrl == null or template.apiUrl.isEmpty()}">
+                            <label class="form-check-label" for="sourceManual"><i class="bi bi-pencil-square"></i> 手动输入</label>
+                        </div>
+                        <div class="form-text">
+                            <small class="text-muted">选择从接口获取数据或在下方输入 JSON/URL 参数</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-4" id="apiInputGroup" style="display: none;">
+                        <label class="form-label">接口请求参数</label>
+                        <textarea class="form-control" id="apiParams" rows="6" placeholder='id=123&name=张三 或 {"id":123,"name":"张三"}'></textarea>
+                        <div class="form-text">
+                            <small class="text-info"><i class="bi bi-info-circle"></i> 用户参数 → API接口 → Groovy脚本 → Word模板</small>
+                        </div>
+                    </div>
+                    <div class="mb-4" id="manualInputGroup" style="display: none;">
+                        <label class="form-label">手动数据（JSON 或 URL 参数）</label>
+                        <textarea class="form-control" id="manualData" rows="6" placeholder='{"title":"示例报告","items":[{"name":"A","value":1}]}'></textarea>
+                        <div class="form-text">
+                            <small class="text-info"><i class="bi bi-info-circle"></i> 手动数据 → Groovy脚本 → Word模板</small>
+                        </div>
+                        <div class="form-text" th:if="${template.groovyScript == null or template.groovyScript.isEmpty()}">
+                            <small class="text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 未绑定 Groovy 脚本，数据将直接用于 Word 模板渲染
+                            </small>
+                        </div>
+                        </div>
+                        <div class="form-text" th:if="${template.groovyScript != null and !template.groovyScript.isEmpty()}">
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i> 已配置 Groovy 脚本用于数据处理
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" onclick="location.href='/report-system/generation/list'">
+                            取消
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-play-fill"></i> 开始生成
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script th:inline="javascript">
+        const templateId = /*[[${template.id}]]*/ 0;
+        function updateSourceVisibility() {
+            const apiRadio = document.getElementById('sourceApi');
+            const useApiChecked = apiRadio && apiRadio.checked;
+            const apiGroup = document.getElementById('apiInputGroup');
+            const manualGroup = document.getElementById('manualInputGroup');
+            if (apiGroup) apiGroup.style.display = useApiChecked ? '' : 'none';
+            if (manualGroup) manualGroup.style.display = useApiChecked ? 'none' : '';
+        }
+        document.querySelectorAll('input[name="dataSource"]').forEach(el => el.addEventListener('change', updateSourceVisibility));
+        updateSourceVisibility();
+
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const useApi = document.getElementById('sourceApi') && document.getElementById('sourceApi').checked;
+
+            let params = {};
+            try {
+                const text = useApi
+                  ? (document.getElementById('apiParams')?.value || '').trim()
+                  : (document.getElementById('manualData')?.value || '').trim();
+                if (text) {
+                    if (text.startsWith('{')) {
+                        params = JSON.parse(text);
+                    } else {
+                        const pairs = text.split('&');
+                        for (const pair of pairs) {
+                            const [key, value] = pair.split('=');
+                            if (key && value !== undefined) {
+                                params[decodeURIComponent(key)] = decodeURIComponent(value);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                Swal.fire('格式错误', '请输入有效的JSON格式或URL参数格式', 'warning');
+                return;
+            }
+            params._useApi = !!useApi;
+
+            const btn = e.submitter || e.target.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> 生成中...';
+            }
+
+            try {
+                const response = await fetch('/report-system/generation/generate?templateId=' + templateId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '生成成功！',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.href = '/report-system/generation/list';
+                    });
+                } else {
+                    Swal.fire('生成失败', data.message, 'error');
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="bi bi-play-fill"></i> 开始生成';
+                    }
+                }
+            } catch (error) {
+                Swal.fire('请求失败', error.message, 'error');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-play-fill"></i> 开始生成';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
