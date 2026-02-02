@@ -35,6 +35,9 @@ public class ReportGeneration {
 
     private String errorMessage;
 
+    @TableField("execution_log")
+    private String executionLog;
+
     private String createdBy;
 
     @TableField(fill = FieldFill.INSERT)

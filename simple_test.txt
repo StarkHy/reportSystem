@@ -1,0 +1,9 @@
+// 最简单的测试脚本
+// 直接使用模板变量
+
+data.put("name", "张三")
+data.put("age", 30)
+data.put("department", "技术部")
+data.put("date", "2024-01-15")
+
+log.info("数据填充完成")

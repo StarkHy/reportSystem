@@ -1,0 +1,106 @@
+// ====================================
+// 调试脚本 - 专门测试表格循环
+// ====================================
+
+log.info("========== 开始调试表格循环 ==========")
+
+// 1. 测试基本数据填充
+log.info("步骤1: 填充基本数据")
+data.put("title", "表格循环测试报告")
+data.put("reportId", "DEBUG-001")
+data.put("reportDate", "2024-01-15")
+log.info("  基本数据填充完成")
+
+// 2. 测试单个表格数据
+log.info("步骤2: 创建表格数据")
+def dimensions = [
+    [
+        dimension: "工作业绩",
+        score: 90,
+        weight: "35%",
+        comment: "出色完成"
+    ],
+    [
+        dimension: "专业能力",
+        score: 88,
+        weight: "25%",
+        comment: "能力强"
+    ]
+]
+
+log.info("  dimensions 类型: ${dimensions.getClass()}")
+log.info("  dimensions 大小: ${dimensions.size()}")
+log.info("  第一项: ${dimensions[0]}")
+
+data.put("dimensions", dimensions)
+log.info("  dimensions 数据已设置到 data")
+
+// 3. 验证数据是否正确设置
+log.info("步骤3: 验证数据")
+def savedDimensions = data.get("dimensions")
+log.info("  保存的 dimensions: ${savedDimensions}")
+log.info("  类型: ${savedDimensions?.getClass()}")
+log.info("  大小: ${savedDimensions?.size()}")
+
+// 4. 测试项目经历表格
+log.info("步骤4: 创建项目经历表格数据")
+def projects = [
+    [
+        projectName: "项目A",
+        role: "负责人",
+        startDate: "2024-01-01",
+        endDate: "2024-03-31",
+        completion: 100,
+        achievement: "按时交付"
+    ],
+    [
+        projectName: "项目B",
+        role: "参与者",
+        startDate: "2024-02-01",
+        endDate: "2024-04-30",
+        completion: 95,
+        achievement: "进展顺利"
+    ]
+]
+
+log.info("  projects 类型: ${projects.getClass()}")
+log.info("  projects 大小: ${projects.size()}")
+
+data.put("projects", projects)
+log.info("  projects 数据已设置到 data")
+
+// 5. 测试列表数据
+log.info("步骤5: 创建列表数据")
+def strengths = [
+    "优势1",
+    "优势2",
+    "优势3"
+]
+
+def improvements = [
+    "改进1",
+    "改进2"
+]
+
+log.info("  strengths 类型: ${strengths.getClass()}")
+log.info("  strengths 大小: ${strengths.size()}")
+
+data.put("strengths", strengths)
+data.put("improvements", improvements)
+
+log.info("  列表数据已设置到 data")
+
+// 6. 最终验证
+log.info("步骤6: 最终验证")
+log.info("  data 中的所有键: ${data.keySet()}")
+log.info("  dimensions: ${data.get('dimensions')}")
+log.info("  projects: ${data.get('projects')}")
+log.info("  strengths: ${data.get('strengths')}")
+
+log.info("========== 调试完成 ==========")
+log.info("")
+log.info("请检查生成的 Word 文档中的表格是否正确显示")
+log.info("如果表格仍为空，请检查：")
+log.info("  1. Word 模板中是否在表格第一行第一列使用了 {{#dimensions}}")
+log.info("  2. 表格的列名是否与数据对象的属性名一致（dimension, score, weight, comment）")
+log.info("  3. 是否有多余的空格或字符")

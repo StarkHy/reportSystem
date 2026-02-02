@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>员工考核报告模板（poi-tl 1.12.1 正确格式）</title>
+    <style>
+        body {
+            font-family: "宋体", "SimSun", Arial;
+            font-size: 12pt;
+            line-height: 1.5;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #2E74B5;
+            margin-bottom: 10px;
+        }
+        .section {
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #2E74B5;
+            margin-bottom: 10px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: middle;
+        }
+        .info-table .label {
+            background-color: #E7E6E6;
+            width: 120px;
+            font-weight: bold;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .score-table th {
+            background-color: #2E74B5;
+            color: white;
+            padding: 8px;
+            border: 1px solid #000;
+            text-align: center;
+        }
+        .score-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        .score-table td:first-child,
+        .score-table td:last-child {
+            text-align: left;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .score {
+            font-weight: bold;
+            color: #FF0000;
+        }
+        .warning {
+            background-color: #FFEBEE;
+            border: 2px solid #F44336;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .code {
+            background-color: #F5F5F5;
+            padding: 10px;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+            border: 1px solid #DDD;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">{{title}}</div>
+        <div>报告编号：{{reportId}}</div>
+        <div>生成日期：{{reportDate}}</div>
+    </div>
+
+    <div class="warning">
+        <strong>⚠️ 重要说明：</strong>poi-tl 1.12.1 表格循环格式<br>
+        表格循环标记 <code>{{#tableVar}}</code> 应该单独放在表格第一行的第一个单元格，不要与属性名连在一起！
+    </div>
+
+    <div class="section">
+        <div class="section-title">一、基本信息</div>
+        <table class="info-table">
+            <tr>
+                <td class="label">员工姓名</td>
+                <td>{{name}}</td>
+                <td class="label">员工编号</td>
+                <td>{{employeeId}}</td>
+            </tr>
+            <tr>
+                <td class="label">部门</td>
+                <td>{{department}}</td>
+                <td class="label">职位</td>
+                <td>{{position}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">二、考核结果</div>
+        <table class="info-table">
+            <tr>
+                <td class="label">综合评分</td>
+                <td class="score">{{overallScore}}</td>
+                <td class="label">考核等级</td>
+                <td>{{level}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">三、考核维度（表格循环 - 正确格式）</div>
+
+        <div class="warning">
+            <strong>在 Word 中的操作步骤：</strong><br>
+            1. 创建一个 2 行的表格（第1行表头，第2行数据）<br>
+            2. 在第2行第1个单元格只输入：<code>{{#dimensions}}</code><br>
+            3. 在第2行第2个单元格输入：<code>{{dimension}}</code><br>
+            4. 在第2行第3个单元格输入：<code>{{score}}</code><br>
+            5. 在第2行第4个单元格输入：<code>{{weight}}</code><br>
+            6. 在第2行第5个单元格输入：<code>{{comment}}</code><br>
+            <br>
+            <strong>关键：</strong><code>{{#dimensions}}</code> 必须单独在第一个单元格，不要与 <code>dimension</code> 连在一起！
+        </div>
+
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>考核维度</th>
+                    <th>分数</th>
+                    <th>权重</th>
+                    <th>评价</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{@index+1}}</td>
+                    <td>{{#dimensions}}{{dimension}}</td>
+                    <td class="score">{{score}}</td>
+                    <td>{{weight}}</td>
+                    <td>{{comment}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">四、项目经历（表格循环）</div>
+
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>项目名称</th>
+                    <th>角色</th>
+                    <th>项目时间</th>
+                    <th>完成度</th>
+                    <th>成果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{@index+1}}</td>
+                    <td>{{#projects}}{{projectName}}</td>
+                    <td>{{role}}</td>
+                    <td>{{startDate}} 至 {{endDate}}</td>
+                    <td class="score">{{completion}}%</td>
+                    <td>{{achievement}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">五、优势与不足</div>
+
+        <p><strong>优势：</strong></p>
+        <ul>
+            <!-- poi-tl 列表循环格式：{{*listVar}} 单独在第一个列表项 -->
+            <li>{{*strengths}}</li>
+        </ul>
+
+        <p><strong>改进方向：</strong></p>
+        <ul>
+            <li>{{*improvements}}</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">六、发展目标</div>
+        <ul>
+            <li>{{*goals}}</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">七、总结评价</div>
+        <p>{{summary}}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">八、签字</div>
+        <div style="text-align: right; margin-top: 50px;">
+            <div style="margin-top: 10px;">
+                <p><strong>员工签字：</strong>______________________</p>
+                <p><strong>日期：</strong>{{signature.employeeDate}}</p>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <p><strong>审批人签字：</strong>______________________</p>
+                <p><strong>日期：</strong>{{signature.approveDate}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">附录：正确的 Word 模板格式</div>
+
+        <h3>表格循环格式（poi-tl 1.12.1）</h3>
+
+        <h4>错误格式 ❌</h4>
+        <div class="code">
+| 考核维度 | 分数 |<br>
+| {{#dimensions}}dimension | {{score}} |  ← 标记与属性连在一起
+        </div>
+
+        <h4>正确格式 ✅</h4>
+        <div class="code">
+| 序号 | 考核维度 | 分数 |<br>
+| {{@index+1}} | {{#dimensions}}{{dimension}} | {{score}} |  ← 标记单独在单元格
+        </div>
+
+        <h3>详细说明</h3>
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>单元格位置</th>
+                    <th>内容</th>
+                    <th>说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>第2行，第1列</td>
+                    <td><code>{{@index+1}}</code></td>
+                    <td>序号（可选）</td>
+                </tr>
+                <tr>
+                    <td>第2行，第2列</td>
+                    <td><code>{{#dimensions}}{{dimension}}</code></td>
+                    <td>循环标记 + 属性名</td>
+                </tr>
+                <tr>
+                    <td>第2行，第3列</td>
+                    <td><code>{{score}}</code></td>
+                    <td>属性名</td>
+                </tr>
+                <tr>
+                    <td>第2行，第4列</td>
+                    <td><code>{{weight}}</code></td>
+                    <td>属性名</td>
+                </tr>
+                <tr>
+                    <td>第2行，第5列</td>
+                    <td><code>{{comment}}</code></td>
+                    <td>属性名</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Groovy 脚本</h3>
+        <div class="code">
+def dimensions = [<br>
+&nbsp;&nbsp;[dimension: "工作业绩", score: 90, weight: "35%", comment: "优秀"],<br>
+&nbsp;&nbsp;[dimension: "专业能力", score: 88, weight: "25%", comment: "良好"]<br>
+]<br>
+data.put("dimensions", dimensions)
+        </div>
+
+        <h3>注意事项</h3>
+        <ul>
+            <li><code>{{#dimensions}}</code> 循环标记必须单独在第一个数据单元格</li>
+            <li>不要将循环标记和属性名连在一起</li>
+            <li>可以使用 <code>{{@index}}</code> 或 <code>{{@index+1}}</code> 显示序号</li>
+            <li>属性名必须与数据对象的属性名完全一致</li>
+        </ul>
+    </div>
+</body>
+</html>

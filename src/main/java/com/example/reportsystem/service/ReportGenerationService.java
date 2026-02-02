@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.deepoove.poi.XWPFTemplate;
 import com.deepoove.poi.config.Configure;
 import com.deepoove.poi.config.ConfigureBuilder;
+import com.deepoove.poi.plugin.table.LoopRowTableRenderPolicy;
 import com.example.reportsystem.entity.ReportGeneration;
 import com.example.reportsystem.entity.ReportTemplate;
 import com.example.reportsystem.mapper.ReportGenerationMapper;
+import com.example.reportsystem.util.ScriptLogger;
 import io.minio.*;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -133,6 +135,9 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
 
         initBucket();
 
+        // 创建脚本日志收集器
+        ScriptLogger scriptLogger = new ScriptLogger();
+
         ReportGeneration generation = new ReportGeneration();
         generation.setTemplateId(templateId);
         generation.setTemplateName(template.getName());
@@ -151,6 +156,11 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
         generation.setUpdateTime(LocalDateTime.now());
 
         try {
+            scriptLogger.info("开始生成报表，模板ID: " + templateId + ", 模板名称: " + template.getName());
+            scriptLogger.info("数据来源: " + (useApi ? "API接口" : "手动输入"));
+            if (params != null) {
+                scriptLogger.debug("请求参数: " + params.toString());
+            }
             String fileName = LocalDateTime.now().toString().replace(":", "-") + "_" + template.getFileName();
             String objectName = "generated/" + templateId + "/" + fileName;
 
@@ -162,17 +172,21 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
             Map<String, Object> apiData = params;
             if (useApi && template.getApiUrl() != null && !template.getApiUrl().trim().isEmpty()) {
                 generation.setDataSource("API");
+                scriptLogger.info("从 API 获取数据: " + template.getApiUrl());
                 try {
                     apiData = fetchDataFromApi(template.getApiUrl(), params);
                     generation.setResponseData(apiData.toString());
+                    scriptLogger.info("API 数据获取成功，数据大小: " + apiData.size() + " 条记录");
                 } catch (Exception apiEx) {
                     log.error("API 数据获取失败，将回退到手动输入数据", apiEx);
+                    scriptLogger.error("API 数据获取失败: " + apiEx.getMessage(), apiEx);
                     apiData = params != null ? params : java.util.Collections.emptyMap();
                     generation.setResponseData("API 调用失败，已回退到手动数据: " + apiEx.getMessage());
                     generation.setDataSource("MANUAL");
                 }
             } else {
                 generation.setDataSource("MANUAL");
+                scriptLogger.info("使用手动输入数据");
             }
 
             // 2. 使用 Groovy 脚本处理数据
@@ -182,10 +196,30 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
             ConfigureBuilder builder = Configure.builder();
 
             if (groovyScriptContent != null && !groovyScriptContent.trim().isEmpty()) {
-                renderData = executeGroovyScript(groovyScriptContent, apiData, params, builder);
+                scriptLogger.info("开始执行 Groovy 脚本");
+                renderData = executeGroovyScript(groovyScriptContent, apiData, params, builder, scriptLogger);
+                scriptLogger.info("Groovy 脚本执行完成");
+            } else {
+                scriptLogger.info("未配置 Groovy 脚本，使用原始数据");
             }
 
+            // 2.5 自动探测 renderData 中的 List 并绑定 LoopRowTableRenderPolicy
+            // 只有绑定了 Policy，{{#list}} 标签才能被正确识别为表格循环
+            if (renderData != null) {
+                renderData.forEach((key, value) -> {
+                    if (value instanceof java.util.List) {
+                        scriptLogger.info("检测到列表数据 [" + key + "]，自动绑定 LoopRowTableRenderPolicy");
+
+                        // 如果是复杂的监测报表（需要跨行合并），可以在 Groovy 脚本中预设合并列
+                        // 这里我们先绑定最基础的循环策略
+                        builder.bind(key, new LoopRowTableRenderPolicy());
+                    }
+                });
+            }
+
+
             // 3. 渲染 Word
+            scriptLogger.info("开始渲染 Word 文档");
             InputStream templateStream = downloadTemplate(template.getFilePath());
             XWPFTemplate wordTemplate = XWPFTemplate.compile(templateStream, builder.build());
             wordTemplate.render(renderData);
@@ -196,6 +230,7 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
 
             byte[] fileBytes = outputStream.toByteArray();
             ByteArrayInputStream inputStream = new ByteArrayInputStream(fileBytes);
+            scriptLogger.info("Word 文档渲染完成，文件大小: " + fileBytes.length + " 字节");
 
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -209,15 +244,18 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
             generation.setFilePath(objectName);
             generation.setFileSize((long) fileBytes.length);
             generation.setStatus(1);
+            generation.setExecutionLog(scriptLogger.getFullLog());
 
+            scriptLogger.info("报表生成成功！");
             updateById(generation);
 
             return generation;
 
         } catch (Exception e) {
             log.error("生成报告失败", e);
+            scriptLogger.error("生成报告失败: " + e.getMessage(), e);
             generation.setStatus(2);
-            generation.setErrorMessage(e.getMessage());
+            generation.setExecutionLog(scriptLogger.getFullLog());
             updateById(generation);
             throw new RuntimeException("生成报告失败: " + e.getMessage());
         }
@@ -252,11 +290,12 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> executeGroovyScript(String scriptContent, Map<String, Object> data, Map<String, Object> params, ConfigureBuilder builder) {
+    private Map<String, Object> executeGroovyScript(String scriptContent, Map<String, Object> data, Map<String, Object> params, ConfigureBuilder builder, ScriptLogger scriptLogger) {
         try {
             ScriptEngine engine = scriptEngineManager.getEngineByName("groovy");
             if (engine == null) {
                 log.error("Groovy 脚本引擎不可用");
+                scriptLogger.error("Groovy 脚本引擎不可用");
                 return data;
             }
 
@@ -264,19 +303,22 @@ public class ReportGenerationService extends ServiceImpl<ReportGenerationMapper,
             engine.put("data", data);
             engine.put("params", params);
             engine.put("config", builder);
-            engine.put("log", log);
+            engine.put("log", scriptLogger);
 
             Object result = engine.eval(scriptContent);
 
             if (result instanceof Map) {
+                scriptLogger.debug("Groovy 脚本返回 Map 类型数据");
                 return (Map<String, Object>) result;
             } else {
+                scriptLogger.debug("Groovy 脚本返回非 Map 类型数据，将作为 scriptResult 添加到数据中");
                 Map<String, Object> resultMap = data;
                 resultMap.put("scriptResult", result);
                 return resultMap;
             }
         } catch (Exception e) {
             log.error("执行 Groovy 脚本失败", e);
+            scriptLogger.error("执行 Groovy 脚本失败: " + e.getMessage(), e);
             return data;
         }
     }

@@ -1,0 +1,113 @@
+{
+  "name": "张三",
+  "employeeId": "EMP20240115001",
+  "department": "研发部",
+  "position": "高级工程师",
+  "level": "P6",
+  "joinDate": "2022-03-15",
+  "gender": "男",
+  "age": 30,
+  "phone": "138****5678",
+  "email": "zhangsan@company.com",
+
+  "reportPeriod": "2024年第一季度",
+  "reportDate": "2024-01-15",
+  "reviewer": "王经理",
+  "reviewerDepartment": "人力资源部",
+
+  "performanceData": {
+    "overallScore": 88.5,
+    "level": "良好",
+    "rank": "15/50",
+
+    "dimensions": [
+      {
+        "dimension": "工作业绩",
+        "score": 90,
+        "weight": 0.35,
+        "comment": "出色完成各项工作任务，超额完成KPI指标"
+      },
+      {
+        "dimension": "专业能力",
+        "score": 88,
+        "weight": 0.25,
+        "comment": "技术水平不断提升，能够独立解决复杂问题"
+      },
+      {
+        "dimension": "团队协作",
+        "score": 90,
+        "weight": 0.20,
+        "comment": "团队融合度高，积极帮助同事解决问题"
+      },
+      {
+        "dimension": "创新意识",
+        "score": 85,
+        "weight": 0.10,
+        "comment": "有创新想法和建议，提出多项优化方案"
+      },
+      {
+        "dimension": "学习成长",
+        "score": 88,
+        "weight": 0.10,
+        "comment": "学习能力强，快速掌握新技术"
+      }
+    ]
+  },
+
+  "projects": [
+    {
+      "projectName": "项目管理平台",
+      "role": "技术负责人",
+      "startDate": "2023-10-01",
+      "endDate": "2023-12-31",
+      "completion": 100,
+      "achievement": "按时交付，质量优异，获得客户好评"
+    },
+    {
+      "projectName": "数据中台建设",
+      "role": "核心开发",
+      "startDate": "2023-09-15",
+      "endDate": "2024-01-15",
+      "completion": 95,
+      "achievement": "进度良好，代码规范，文档完善"
+    },
+    {
+      "projectName": "移动端应用",
+      "role": "架构设计",
+      "startDate": "2023-08-01",
+      "endDate": "2023-11-30",
+      "completion": 88,
+      "achievement": "设计方案合理，系统稳定可靠"
+    }
+  ],
+
+  "strengths": [
+    "技术能力强，能独立解决复杂问题",
+    "代码质量高，注重规范性",
+    "团队协作好，乐于分享经验",
+    "学习能力强，快速掌握新技术",
+    "责任心强，能够承担重要任务"
+  ],
+
+  "improvements": [
+    "加强项目管理能力",
+    "提高文档编写效率",
+    "优化时间管理"
+  ],
+
+  "goals": [
+    "提升架构设计能力，完成2个核心系统架构",
+    "获得高级技术认证",
+    "培养2名初级工程师",
+    "发表技术博客10篇"
+  ],
+
+  "summary": "该员工在过去一个季度表现优秀，各项指标均达到预期。技术能力突出，在多个项目中发挥了关键作用。团队协作能力强，积极帮助同事解决问题。建议继续保持良好状态，在架构设计和团队管理方面进一步提升。",
+
+  "signature": {
+    "employee": "张三",
+    "date": "2024-01-15",
+    "approver": "王经理",
+    "approveDate": "2024-01-16"
+  }
+}

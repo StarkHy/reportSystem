@@ -1,0 +1,161 @@
+// ====================================
+// 脚本1: 带样式的文本（poi-tl 1.12.1）
+// ====================================
+
+import com.deepoove.poi.data.style.Style
+import com.deepoove.poi.data.TextRenderData
+
+// 创建标题样式
+def titleStyle = new Style()
+titleStyle.setBold(true)
+titleStyle.setFontSize(16)
+titleStyle.setColor("2E74B5")
+
+// 创建粗体样式
+def boldStyle = new Style()
+boldStyle.setBold(true)
+boldStyle.setFontSize(12)
+
+// 创建红色样式
+def redStyle = new Style()
+redStyle.setColor("FF0000")
+redStyle.setBold(true)
+
+// 应用样式
+data.put("title", new TextRenderData("员工考核报告", titleStyle))
+data.put("name", new TextRenderData("张三", boldStyle))
+data.put("remark", new TextRenderData("优秀", redStyle))
+
+log.info("带样式的文本处理完成")
+
+// ====================================
+// 脚本2: 表格样式处理
+// ====================================
+
+import com.deepoove.poi.data.style.Style
+
+// 处理表格数据
+def scores = [
+    [name: "需求分析", score: 90, weight: 0.3],
+    [name: "代码质量", score: 85, weight: 0.3],
+    [name: "团队协作", score: 88, weight: 0.2],
+    [name: "文档编写", score: 92, weight: 0.2]
+]
+
+// 计算加权分数
+scores.each { item ->
+    item.weightedScore = (item.score * item.weight).round(2)
+}
+
+// 添加汇总行
+def totalScore = scores.sum { it.weightedScore }
+scores << [name: "综合评分", score: totalScore.round(2), weight: 1.0, weightedScore: totalScore.round(2)]
+
+data.put("scores", scores)
+data.put("totalScore", totalScore.round(2))
+
+log.info("表格样式处理完成，综合评分: ${totalScore.round(2)}")
+
+// ====================================
+// 脚本3: 图片处理
+// ====================================
+
+import com.deepoove.poi.data.Pictures
+
+// 添加本地图片（如果有）
+try {
+    // 示例：从参数获取图片路径
+    def imagePath = params.get("signatureImage")
+    if (imagePath) {
+        def picture = Pictures.ofLocal(imagePath).size(150, 80).build()
+        data.put("signature", picture)
+        log.info("签名图片添加成功")
+    }
+} catch (Exception e) {
+    log.error("图片处理失败: " + e.getMessage())
+}
+
+// ====================================
+// 脚本4: 列表样式
+// ====================================
+
+def strengths = [
+    "技术能力强，能独立解决复杂问题",
+    "代码质量高，注重规范性",
+    "团队协作好，乐于分享经验",
+    "学习能力强，快速掌握新技术"
+]
+
+def improvements = [
+    "加强项目管理能力",
+    "提高文档编写效率",
+    "优化时间管理"
+]
+
+data.put("strengths", strengths)
+data.put("improvements", improvements)
+
+log.info("列表样式处理完成")
+
+// ====================================
+// 脚本5: 段落样式
+// ====================================
+
+import com.deepoove.poi.data.style.Style
+import com.deepoove.poi.data.TextRenderData
+
+// 创建评价文本
+def comment = "该员工在过去一个季度表现优秀，各项指标均达到预期。技术能力突出，"
+comment += "在多个项目中发挥了关键作用。团队协作能力强，积极帮助同事解决问题。"
+
+def commentStyle = new Style()
+commentStyle.setFontSize(11)
+commentStyle.setFontFamily("宋体")
+
+data.put("comment", new TextRenderData(comment, commentStyle))
+
+log.info("段落样式处理完成")
+
+// ====================================
+// 脚本6: 综合样式应用
+// ====================================
+
+import com.deepoove.poi.data.style.Style
+import com.deepoove.poi.data.TextRenderData
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+// 标题样式
+def titleStyle = new Style()
+titleStyle.setBold(true)
+titleStyle.setFontSize(18)
+titleStyle.setColor("2E74B5")
+
+// 小标题样式
+def subtitleStyle = new Style()
+subtitleStyle.setBold(true)
+subtitleStyle.setFontSize(14)
+
+// 内容样式
+def contentStyle = new Style()
+contentStyle.setFontSize(11)
+
+data.put("reportTitle", new TextRenderData("年度考核报告", titleStyle))
+data.put("employeeName", new TextRenderData("张三", subtitleStyle))
+data.put("reportDate", new TextRenderData(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")), contentStyle))
+
+// 考核项目
+def evaluationItems = [
+    [name: "工作业绩", score: 92, comment: "出色完成各项工作任务"],
+    [name: "专业能力", score: 88, comment: "技术水平不断提升"],
+    [name: "团队协作", score: 90, comment: "团队融合度高"],
+    [name: "创新意识", score: 85, comment: "有创新想法和建议"]
+]
+
+evaluationItems.each { item ->
+    item.level = item.score >= 90 ? "优秀" : item.score >= 80 ? "良好" : "合格"
+}
+
+data.put("evaluationItems", evaluationItems)
+
+log.info("综合样式应用完成")

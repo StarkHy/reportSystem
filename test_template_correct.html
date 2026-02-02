@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>员工考核报告模板（正确格式）</title>
+    <style>
+        body {
+            font-family: "宋体", "SimSun", Arial;
+            font-size: 12pt;
+            line-height: 1.5;
+            margin: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .title {
+            font-size: 20pt;
+            font-weight: bold;
+            color: #2E74B5;
+            margin-bottom: 10px;
+        }
+        .section {
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #2E74B5;
+            margin-bottom: 10px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .info-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: middle;
+        }
+        .info-table .label {
+            background-color: #E7E6E6;
+            width: 120px;
+            font-weight: bold;
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .score-table th {
+            background-color: #2E74B5;
+            color: white;
+            padding: 8px;
+            border: 1px solid #000;
+            text-align: center;
+        }
+        .score-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        .score-table td:first-child,
+        .score-table td:last-child {
+            text-align: left;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .score {
+            font-weight: bold;
+            color: #FF0000;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: right;
+        }
+        .signature-box {
+            margin-top: 10px;
+        }
+        .note {
+            background-color: #FFF2CC;
+            padding: 10px;
+            border: 1px solid #FFD700;
+            margin: 20px 0;
+        }
+        .code {
+            background-color: #F5F5F5;
+            padding: 10px;
+            font-family: Consolas, monospace;
+            font-size: 10pt;
+            border: 1px solid #DDD;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">{{title}}</div>
+        <div>报告编号：{{reportId}}</div>
+        <div>生成日期：{{reportDate}}</div>
+    </div>
+
+    <div class="note">
+        <strong>⚠️ 重要提示：</strong>poi-tl 1.12.1 的表格循环标记格式！
+    </div>
+
+    <div class="section">
+        <div class="section-title">一、基本信息</div>
+        <table class="info-table">
+            <tr>
+                <td class="label">员工姓名</td>
+                <td>{{name}}</td>
+                <td class="label">员工编号</td>
+                <td>{{employeeId}}</td>
+            </tr>
+            <tr>
+                <td class="label">部门</td>
+                <td>{{department}}</td>
+                <td class="label">职位</td>
+                <td>{{position}}</td>
+            </tr>
+            <tr>
+                <td class="label">职级</td>
+                <td>{{level}}</td>
+                <td class="label">性别</td>
+                <td>{{gender}}</td>
+            </tr>
+            <tr>
+                <td class="label">入职日期</td>
+                <td>{{joinDate}}</td>
+                <td class="label">年龄</td>
+                <td>{{age}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">二、考核结果</div>
+        <table class="info-table">
+            <tr>
+                <td class="label">考核周期</td>
+                <td>{{reportPeriod}}</td>
+                <td class="label">考核等级</td>
+                <td>{{level}}</td>
+            </tr>
+            <tr>
+                <td class="label">综合评分</td>
+                <td class="score">{{overallScore}}</td>
+                <td class="label">排名</td>
+                <td>{{rank}}</td>
+            </tr>
+            <tr>
+                <td class="label">考核人</td>
+                <td>{{reviewer}}</td>
+                <td class="label">考核部门</td>
+                <td>{{reviewerDepartment}}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">三、考核维度（表格循环示例）</div>
+
+        <div class="note">
+            <strong>poi-tl 表格循环格式：</strong><br>
+            在 Word 中创建表格后，需要将循环标记放在第一个数据行的第一个单元格中。<br>
+            格式为：<code>{{#tableVariable}}</code>，其中 <code>tableVariable</code> 是脚本中设置的表格数据变量名。
+        </div>
+
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>考核维度</th>
+                    <th>分数</th>
+                    <th>权重</th>
+                    <th>评价</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+                在 Word 中的实际操作步骤：
+
+                1. 创建一个 2 行的表格（第1行是表头，第2行是数据行）
+                2. 在第2行第1个单元格输入：{{#dimensions}}dimension
+                3. 在第2行第2个单元格输入：{{score}}
+                4. 在第2行第3个单元格输入：{{weight}}
+                5. 在第2行第4个单元格输入：{{comment}}
+
+                重要：
+                - {{#dimensions}} 必须在第一个单元格
+                - 变量名（dimension, score等）必须与数据对象的属性名一致
+                -->
+                <tr>
+                    <td>{{#dimensions}}{{dimension}}</td>
+                    <td class="score">{{score}}</td>
+                    <td>{{weight}}</td>
+                    <td>{{comment}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">四、项目经历（表格循环示例）</div>
+
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>项目名称</th>
+                    <th>角色</th>
+                    <th>项目时间</th>
+                    <th>完成度</th>
+                    <th>成果</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!--
+                在 Word 中的实际操作步骤：
+
+                1. 创建一个 2 行的表格
+                2. 在第2行第1个单元格输入：{{#projects}}项目名称
+                3. 在第2行第2个单元格输入：{{role}}
+                4. 在第2行第3个单元格输入：{{startDate}} 至 {{endDate}}
+                5. 在第2行第4个单元格输入：{{completion}}%
+                6. 在第2行第5个单元格输入：{{achievement}}
+                -->
+                <tr>
+                    <td>{{#projects}}{{projectName}}</td>
+                    <td>{{role}}</td>
+                    <td>{{startDate}} 至 {{endDate}}</td>
+                    <td class="score">{{completion}}%</td>
+                    <td>{{achievement}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <div class="section-title">五、优势与不足（列表循环示例）</div>
+
+        <div class="note">
+            <strong>poi-tl 列表循环格式：</strong><br>
+            在 Word 中创建列表后，需要在第一个列表项前面加上循环标记。<br>
+            格式为：<code>{{*listVariable}}</code>，其中 <code>listVariable</code> 是脚本中设置的列表数据变量名。
+        </div>
+
+        <p><strong>优势：</strong></p>
+        <ul>
+            <!--
+            在 Word 中的实际操作步骤：
+
+            1. 创建一个列表
+            2. 在第一个列表项前面输入：{{*strengths}}
+            3. 然后可以删除或修改列表项的文字，poi-tl 会自动替换
+            -->
+            <li>{{*strengths}}优势内容（会被自动替换）</li>
+        </ul>
+
+        <p><strong>改进方向：</strong></p>
+        <ul>
+            <li>{{*improvements}}改进内容（会被自动替换）</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">六、发展目标</div>
+        <ul>
+            <li>{{*goals}}目标内容（会被自动替换）</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <div class="section-title">七、总结评价</div>
+        <p>{{summary}}</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">八、签字</div>
+        <div class="footer">
+            <div class="signature-box">
+                <p><strong>员工签字：</strong>______________________</p>
+                <p><strong>日期：</strong>{{signature.employeeDate}}</p>
+            </div>
+
+            <div class="signature-box" style="margin-top: 30px;">
+                <p><strong>审批人签字：</strong>______________________</p>
+                <p><strong>日期：</strong>{{signature.approveDate}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">附录：Groovy 脚本数据结构</div>
+
+        <h3>表格数据（dimensions）</h3>
+        <div class="code">
+def dimensions = [<br>
+&nbsp;&nbsp;[<br>
+&nbsp;&nbsp;&nbsp;&nbsp;dimension: "工作业绩",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;score: 90,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;weight: "35%",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;comment: "出色完成..."<br>
+&nbsp;&nbsp;],<br>
+&nbsp;&nbsp;[...]<br>
+]<br>
+data.put("dimensions", dimensions)
+        </div>
+
+        <h3>列表数据（strengths）</h3>
+        <div class="code">
+def strengths = [<br>
+&nbsp;&nbsp;"技术能力强",<br>
+&nbsp;&nbsp;"代码质量高",<br>
+&nbsp;&nbsp;[...]<br>
+]<br>
+data.put("strengths", strengths)
+        </div>
+
+        <h3>重要提示</h3>
+        <ul>
+            <li>表格循环标记 <code>{{#variable}}</code> 必须在表格第一行的第一个单元格</li>
+            <li>列表循环标记 <code>{{*variable}}</code> 必须在列表的第一项</li>
+            <li>变量名必须与 Groovy 脚本中 <code>data.put()</code> 的第一个参数一致</li>
+            <li>表格列名必须与数据对象的属性名一致（如 dimension, score, weight）</li>
+            <li>不要在占位符中添加多余的空格</li>
+        </ul>
+    </div>
+</body>
+</html>

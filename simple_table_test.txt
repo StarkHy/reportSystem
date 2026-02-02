@@ -1,0 +1,126 @@
+// ====================================
+// 简单的表格测试脚本
+// 用于验证 poi-tl 1.12.1 表格循环功能
+// ====================================
+
+log.info("========== 开始简单表格测试 ==========")
+
+// 1. 设置基本数据
+data.put("title", "简单表格测试")
+data.put("reportId", "TEST-001")
+data.put("reportDate", "2024-01-15")
+data.put("name", "张三")
+data.put("overallScore", "88.5")
+data.put("level", "良好")
+
+log.info("基本数据设置完成")
+
+// 2. 设置表格数据 - 考核维度
+// 重要：变量名必须是 "dimensions"，与 Word 模板中的 {{#dimensions}} 对应
+def dimensions = [
+    [dimension: "工作业绩", score: 90, weight: "35%", comment: "出色完成"],
+    [dimension: "专业能力", score: 88, weight: "25%", comment: "能力强"],
+    [dimension: "团队协作", score: 90, weight: "20%", comment: "协作好"],
+    [dimension: "创新意识", score: 85, weight: "10%", comment: "有创新"],
+    [dimension: "学习成长", score: 88, weight: "10%", comment: "学习快"]
+]
+
+log.info("dimensions 数据准备完成，共 ${dimensions.size()} 项")
+data.put("dimensions", dimensions)
+
+// 3. 设置表格数据 - 项目经历
+def projects = [
+    [
+        projectName: "项目管理平台",
+        role: "技术负责人",
+        startDate: "2023-10-01",
+        endDate: "2023-12-31",
+        completion: 100,
+        achievement: "按时交付"
+    ],
+    [
+        projectName: "数据中台建设",
+        role: "核心开发",
+        startDate: "2023-09-15",
+        endDate: "2024-01-15",
+        completion: 95,
+        achievement: "进展顺利"
+    ],
+    [
+        projectName: "移动端应用",
+        role: "架构设计",
+        startDate: "2023-08-01",
+        endDate: "2023-11-30",
+        completion: 88,
+        achievement: "方案合理"
+    ]
+]
+
+log.info("projects 数据准备完成，共 ${projects.size()} 项")
+data.put("projects", projects)
+
+// 4. 设置列表数据 - 优势
+def strengths = [
+    "技术能力强",
+    "代码质量高",
+    "团队协作好",
+    "学习能力强"
+]
+
+log.info("strengths 数据准备完成，共 ${strengths.size()} 项")
+data.put("strengths", strengths)
+
+// 5. 设置列表数据 - 改进
+def improvements = [
+    "加强项目管理",
+    "提高文档效率"
+]
+
+log.info("improvements 数据准备完成，共 ${improvements.size()} 项")
+data.put("improvements", improvements)
+
+// 6. 设置列表数据 - 目标
+def goals = [
+    "提升架构能力",
+    "获得技术认证",
+    "培养新人"
+]
+
+log.info("goals 数据准备完成，共 ${goals.size()} 项")
+data.put("goals", goals)
+
+// 7. 设置其他数据
+data.put("summary", "该员工表现优秀，各项指标均达到预期。")
+
+data.put("signature", [
+    employeeDate: "2024-01-15",
+    approveDate: "2024-01-16"
+])
+
+log.info("所有数据设置完成")
+
+// 8. 验证数据
+log.info("")
+log.info("========== 数据验证 ==========")
+log.info("dimensions 类型: ${dimensions.getClass()}")
+log.info("dimensions 大小: ${dimensions.size()}")
+log.info("第一项: ${dimensions[0]}")
+log.info("")
+log.info("projects 类型: ${projects.getClass()}")
+log.info("projects 大小: ${projects.size()}")
+log.info("第一项: ${projects[0]}")
+log.info("")
+log.info("strengths 类型: ${strengths.getClass()}")
+log.info("strengths 内容: ${strengths}")
+log.info("")
+log.info("========== 验证完成 ==========")
+
+log.info("")
+log.info("========== 脚本执行完成 ==========")
+log.info("请检查生成的 Word 文档")
+log.info("")
+log.info("如果表格仍然不显示，请检查：")
+log.info("  1. Word 模板中表格第一行的第一个单元格内容是 {{#dimensions}}")
+log.info("  2. {{#dimensions}} 后面的单元格是 {{dimension}}, {{score}} 等")
+log.info("  3. 不要将 {{#dimensions}} 和 {{dimension}} 写在一起")
+log.info("  4. 列表循环使用 {{*strengths}}，单独在第一个列表项")

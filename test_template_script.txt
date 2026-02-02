@@ -1,0 +1,149 @@
+// ====================================
+// 测试脚本 - 员工考核报告
+// 配合 test_template.docx 使用
+// ====================================
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+// 设置报告基本信息
+data.put("title", "2024年第一季度员工考核报告")
+data.put("reportId", "RPT2024-Q1-001")
+data.put("reportDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+
+// 设置员工基本信息
+data.put("name", "张三")
+data.put("employeeId", "EMP20240115001")
+data.put("department", "研发部")
+data.put("position", "高级工程师")
+data.put("level", "P6")
+data.put("gender", "男")
+data.put("age", 30)
+data.put("joinDate", "2022-03-15")
+
+// 设置考核结果
+data.put("reportPeriod", "2024年第一季度")
+data.put("overallScore", "88.5")
+data.put("level", "良好")
+data.put("rank", "15/50")
+data.put("reviewer", "王经理")
+data.put("reviewerDepartment", "人力资源部")
+
+// 设置考核维度（表格数据）
+def dimensions = [
+    [
+        dimension: "工作业绩",
+        score: 90,
+        weight: "35%",
+        comment: "出色完成各项工作任务，超额完成KPI指标"
+    ],
+    [
+        dimension: "专业能力",
+        score: 88,
+        weight: "25%",
+        comment: "技术水平不断提升，能够独立解决复杂问题"
+    ],
+    [
+        dimension: "团队协作",
+        score: 90,
+        weight: "20%",
+        comment: "团队融合度高，积极帮助同事解决问题"
+    ],
+    [
+        dimension: "创新意识",
+        score: 85,
+        weight: "10%",
+        comment: "有创新想法和建议，提出多项优化方案"
+    ],
+    [
+        dimension: "学习成长",
+        score: 88,
+        weight: "10%",
+        comment: "学习能力强，快速掌握新技术"
+    ]
+]
+data.put("dimensions", dimensions)
+
+log.info("考核维度数据设置完成，共 ${dimensions.size()} 项")
+
+// 设置项目经历（表格数据）
+def projects = [
+    [
+        projectName: "项目管理平台",
+        role: "技术负责人",
+        startDate: "2023-10-01",
+        endDate: "2023-12-31",
+        completion: 100,
+        achievement: "按时交付，质量优异，获得客户好评"
+    ],
+    [
+        projectName: "数据中台建设",
+        role: "核心开发",
+        startDate: "2023-09-15",
+        endDate: "2024-01-15",
+        completion: 95,
+        achievement: "进度良好，代码规范，文档完善"
+    ],
+    [
+        projectName: "移动端应用",
+        role: "架构设计",
+        startDate: "2023-08-01",
+        endDate: "2023-11-30",
+        completion: 88,
+        achievement: "设计方案合理，系统稳定可靠"
+    ]
+]
+data.put("projects", projects)
+
+log.info("项目经历数据设置完成，共 ${projects.size()} 个项目")
+
+// 设置优势与不足（列表数据）
+def strengths = [
+    "技术能力强，能独立解决复杂问题",
+    "代码质量高，注重规范性",
+    "团队协作好，乐于分享经验",
+    "学习能力强，快速掌握新技术",
+    "责任心强，能够承担重要任务"
+]
+data.put("strengths", strengths)
+
+def improvements = [
+    "加强项目管理能力",
+    "提高文档编写效率",
+    "优化时间管理"
+]
+data.put("improvements", improvements)
+
+log.info("优势与不足数据设置完成")
+
+// 设置发展目标（列表数据）
+def goals = [
+    "提升架构设计能力，完成2个核心系统架构",
+    "获得高级技术认证",
+    "培养2名初级工程师",
+    "发表技术博客10篇"
+]
+data.put("goals", goals)
+
+log.info("发展目标数据设置完成")
+
+// 设置总结评价
+data.put("summary", "该员工在过去一个季度表现优秀，各项指标均达到预期。技术能力突出，在多个项目中发挥了关键作用。团队协作能力强，积极帮助同事解决问题。建议继续保持良好状态，在架构设计和团队管理方面进一步提升。")
+
+// 设置签字信息
+data.put("signature", [
+    employeeDate: "2024-01-15",
+    approveDate: "2024-01-16"
+])
+
+log.info("考核报告数据全部设置完成")
+
+// 验证数据
+log.info("数据统计:")
+log.info("  - 考核维度: ${dimensions.size()} 项")
+log.info("  - 项目经历: ${projects.size()} 个")
+log.info("  - 优势项: ${strengths.size()} 项")
+log.info("  - 改进项: ${improvements.size()} 项")
+log.info("  - 发展目标: ${goals.size()} 项")
+
+log.info("脚本执行完成")

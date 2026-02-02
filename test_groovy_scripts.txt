@@ -1,0 +1,123 @@
+// ====================================
+// 脚本1: 基本文本替换
+// ====================================
+
+data.put("title", "员工考核报告")
+data.put("name", "张三")
+data.put("department", "研发部")
+data.put("position", "高级工程师")
+data.put("date", "2024-01-15")
+
+log.info("基本文本替换完成")
+
+// ====================================
+// 脚本2: 数字格式化
+// ====================================
+
+// 格式化分数
+def score = 85.5
+data.put("score", score)
+data.put("scorePercent", (score * 100).round(2) + "%")
+
+// 格式化金额
+def salary = 15000.00
+data.put("salary", String.format("¥%,.2f", salary))
+
+log.info("数字格式化完成")
+
+// ====================================
+// 脚本3: 日期处理
+// ====================================
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
+def now = LocalDateTime.now()
+data.put("currentDate", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")))
+data.put("currentDateTime", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+data.put("year", now.format(DateTimeFormatter.ofPattern("yyyy")))
+data.put("month", now.format(DateTimeFormatter.ofPattern("MM")))
+
+log.info("日期处理完成")
+
+// ====================================
+// 脚本4: 表格数据处理
+// ====================================
+
+// 示例表格数据
+def items = [
+    [name: "需求分析", score: 90, comment: "优秀"],
+    [name: "代码质量", score: 85, comment: "良好"],
+    [name: "团队协作", score: 88, comment: "良好"],
+    [name: "文档编写", score: 92, comment: "优秀"]
+]
+
+// 计算平均分
+def avgScore = items.sum { it.score } / items.size()
+data.put("items", items)
+data.put("avgScore", avgScore.round(2))
+
+log.info("表格数据处理完成，平均分: ${avgScore.round(2)}")
+
+// ====================================
+// 脚本5: 条件渲染
+// ====================================
+
+def status = "completed"
+
+if (status == "completed") {
+    data.put("status", "已完成")
+    data.put("statusColor", "green")
+} else if (status == "pending") {
+    data.put("status", "进行中")
+    data.put("statusColor", "orange")
+} else {
+    data.put("status", "未开始")
+    data.put("statusColor", "red")
+}
+
+log.info("状态: ${data.get('status')}")
+
+// ====================================
+// 脚本6: 列表数据处理
+// ====================================
+
+def tasks = [
+    "完成需求文档",
+    "进行系统设计",
+    "编写核心代码",
+    "进行单元测试",
+    "完成部署上线"
+]
+
+data.put("tasks", tasks)
+
+log.info("列表数据处理完成，共 ${tasks.size()} 个任务")
+
+// ====================================
+// 脚本7: 复合数据处理
+// ====================================
+
+// 员工信息
+data.put("employeeName", "李四")
+data.put("employeeId", "EMP20240115")
+data.put("joinDate", "2022-03-15")
+
+// 考核信息
+data.put("reviewPeriod", "2024年第一季度")
+data.put("reviewer", "王经理")
+
+// 详细项目
+def projects = [
+    [name: "项目A", role: "技术负责人", completion: 100, achievement: "按时交付，质量优异"],
+    [name: "项目B", role: "核心开发", completion: 95, achievement: "进度良好，代码规范"],
+    [name: "项目C", role: "架构设计", completion: 88, achievement: "设计方案合理"]
+]
+
+data.put("projects", projects)
+
+// 综合评分
+def totalScore = projects.sum { it.completion } / projects.size()
+data.put("totalScore", totalScore.round(2))
+
+log.info("复合数据处理完成，综合评分: ${totalScore.round(2)}")
